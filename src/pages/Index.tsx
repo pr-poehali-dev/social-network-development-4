@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 
 type Screen = "loading" | "home" | "register" | "login" | "feed";
 type NavTab = "settings" | "ai" | "messenger" | "feed" | "music" | "premium";
-type Lang = "ru" | "en";
+type Lang = "ru" | "en" | "de" | "zh";
 
 const translations = {
   ru: {
@@ -22,6 +22,9 @@ const translations = {
     loading: "Загрузка",
     feedWelcome: "Добро пожаловать в сеть!",
     feedTitle: "Лента kisLanka",
+    addAccount: "Добавить аккаунт",
+    settings: "Настройки", ai: "Нейросеть", messenger: "Мессенджер",
+    feed: "Лента", music: "Музыка", premium: "Премиум",
   },
   en: {
     welcome: "Welcome!",
@@ -40,6 +43,51 @@ const translations = {
     loading: "Loading",
     feedWelcome: "Welcome to the network!",
     feedTitle: "kisLanka Feed",
+    addAccount: "Add account",
+    settings: "Settings", ai: "AI", messenger: "Chats",
+    feed: "Feed", music: "Music", premium: "Premium",
+  },
+  de: {
+    welcome: "Willkommen!",
+    meow: "Meow =)",
+    register: "Ins System einloggen",
+    hasAccount: "Bereits ein Login vorhanden",
+    registerTitle: "Registrierung",
+    emailPlaceholder: "E-Mail eingeben",
+    passwordPlaceholder: "Passwort eingeben",
+    backToLogin: "Bereits ein Login vorhanden",
+    enterSystem: "Ins System einloggen",
+    loginTitle: "Anmeldung",
+    forgotPassword: "Passwort vergessen?",
+    loginBtn: "Anmelden",
+    backToRegister: "Zurück zur Registrierung",
+    loading: "Laden",
+    feedWelcome: "Willkommen im Netzwerk!",
+    feedTitle: "kisLanka Feed",
+    addAccount: "Konto hinzufügen",
+    settings: "Einstellungen", ai: "KI", messenger: "Nachrichten",
+    feed: "Feed", music: "Musik", premium: "Premium",
+  },
+  zh: {
+    welcome: "欢迎！",
+    meow: "喵 =)",
+    register: "登录系统",
+    hasAccount: "已有账户",
+    registerTitle: "注册",
+    emailPlaceholder: "输入邮箱",
+    passwordPlaceholder: "输入密码",
+    backToLogin: "已有账户",
+    enterSystem: "登录系统",
+    loginTitle: "登录",
+    forgotPassword: "忘记密码？",
+    loginBtn: "登录",
+    backToRegister: "返回注册",
+    loading: "加载中",
+    feedWelcome: "欢迎加入网络！",
+    feedTitle: "kisLanka 动态",
+    addAccount: "添加账户",
+    settings: "设置", ai: "人工智能", messenger: "消息",
+    feed: "动态", music: "音乐", premium: "高级版",
   },
 };
 
@@ -238,74 +286,136 @@ export default function Index() {
     return icons[tab];
   };
 
-  const navItems: { tab: NavTab; label: string; labelEn: string }[] = [
-    { tab: "settings", label: "Настройки", labelEn: "Settings" },
-    { tab: "ai", label: "Нейросеть", labelEn: "AI" },
-    { tab: "messenger", label: "Мессенджер", labelEn: "Chats" },
-    { tab: "feed", label: "Лента", labelEn: "Feed" },
-    { tab: "music", label: "Музыка", labelEn: "Music" },
-    { tab: "premium", label: "Премиум", labelEn: "Premium" },
+  const navTabs: NavTab[] = ["settings", "ai", "messenger", "feed", "music", "premium"];
+
+  const langFlags: { code: Lang; src: string; title: string }[] = [
+    { code: "ru", src: "https://cdn.poehali.dev/files/c364c501-1114-4dbe-9ad2-c95cd91bcfc6.png", title: "Русский" },
+    { code: "en", src: "https://cdn.poehali.dev/files/17a39291-a18e-4541-9e69-3a61bedee99d.jpg", title: "English" },
+    { code: "de", src: "https://cdn.poehali.dev/projects/10a289aa-fbf2-4834-87d3-de0e27d8e93b/bucket/e143cdb3-8428-4713-aa87-06de0414b4e5.png", title: "Deutsch" },
+    { code: "zh", src: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Flag_of_the_People%27s_Republic_of_China.svg/255px-Flag_of_the_People%27s_Republic_of_China.svg.png", title: "中文" },
   ];
 
   // FEED
   if (screen === "feed") {
+    const yandexLangMap: Record<Lang, string> = { ru: "ru", en: "en", de: "de", zh: "zh" };
+    const yl = yandexLangMap[lang];
+
     return (
       <div className="flex flex-col bg-white" style={{ minHeight: "100vh" }}>
-        {/* HEADER */}
-        <div className="flex items-center justify-center pt-5 pb-3 px-4 border-b border-gray-100">
+
+        {/* Яндекс Переводчик виджет — скрытый iframe */}
+        <div style={{ position: "absolute", width: 0, height: 0, overflow: "hidden" }}>
+          <iframe
+            key={lang}
+            src={`https://translate.yandex.com/translate?lang=${yl}&url=${encodeURIComponent(typeof window !== "undefined" ? window.location.href : "")}`}
+            title="yandex-translate"
+            style={{ width: 1, height: 1, opacity: 0 }}
+          />
+        </div>
+
+        {/* Яндекс Переводчик — встроенный виджет скрипт */}
+        {lang !== "ru" && (
+          <div
+            id="ytWidget"
+            style={{ position: "fixed", bottom: 80, left: 4, zIndex: 100, background: "#111", borderRadius: 12, padding: "6px 10px", color: "#0FB653", fontSize: 11, fontFamily: "Montserrat", boxShadow: "0 2px 12px #0004", cursor: "pointer" }}
+            onClick={() => {
+              const url = `https://translate.yandex.com/translate?lang=${yl}&url=${encodeURIComponent(typeof window !== "undefined" ? window.location.href : "")}`;
+              window.open(url, "_blank");
+            }}
+          >
+            🌐 {lang.toUpperCase()}
+          </div>
+        )}
+
+        {/* HEADER — чёрная полоса */}
+        <div className="flex items-center justify-between px-4 pt-4 pb-3" style={{ background: "#111" }}>
+          {/* Флаги языков */}
+          <div className="flex items-center gap-2">
+            {langFlags.map(({ code, src, title }) => (
+              <button
+                key={code}
+                onClick={() => setLang(code)}
+                title={title}
+                className="overflow-hidden transition-all hover:scale-110"
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: "50%",
+                  border: lang === code ? "2.5px solid #0FB653" : "2px solid rgba(255,255,255,0.2)",
+                  flexShrink: 0,
+                }}
+              >
+                <img src={src} alt={code} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+              </button>
+            ))}
+          </div>
+
+          {/* kisLanka — без контура */}
           <h1
-            className="text-3xl font-black tracking-tight"
             style={{
               fontFamily: "'Montserrat', sans-serif",
               color: "#0FB653",
-              WebkitTextStroke: "1px #40EFFC",
-              textShadow: "0 0 0 #40EFFC",
+              fontSize: 26,
+              fontWeight: 900,
               letterSpacing: "-0.5px",
+              lineHeight: 1,
             }}
           >
             kisLanka
           </h1>
+
+          {/* Пустое место для симметрии */}
+          <div style={{ width: 32 * 4 + 6 * 3 }} />
         </div>
 
         {/* CONTENT AREA */}
         <div className="flex-1 overflow-y-auto px-4 pt-4 pb-28">
           {/* Добавить аккаунт */}
           <div className="flex items-center gap-3 mb-6">
-            {/* Пустой круг с анимированным контуром */}
-            <div className="relative flex-shrink-0">
+            <div className="relative flex-shrink-0" style={{ width: 56, height: 56 }}>
               {/* Пунктирный серый овал */}
               <div
-                className="absolute inset-0 rounded-full"
                 style={{
-                  border: "2.5px dashed #ccc",
-                  transform: "scale(1.18)",
+                  position: "absolute",
+                  inset: -6,
                   borderRadius: "50%",
+                  border: "2px dashed #ccc",
+                  pointerEvents: "none",
                 }}
               />
               <button
-                className="w-14 h-14 rounded-full flex items-center justify-center relative z-10 transition-all hover:scale-105"
+                className="transition-all hover:scale-105"
                 style={{
+                  width: 56,
+                  height: 56,
+                  borderRadius: "50%",
                   border: `2.5px solid ${circleColor}`,
                   background: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                   transition: "border-color 0.6s ease",
+                  position: "relative",
+                  zIndex: 1,
                 }}
               >
                 <span
-                  className="text-2xl font-bold leading-none"
                   style={{
                     color: circleColor,
-                    transition: "color 0.6s ease",
+                    fontSize: 24,
+                    fontWeight: 700,
                     lineHeight: 1,
+                    transition: "color 0.6s ease",
                   }}
                 >
                   +
                 </span>
               </button>
             </div>
-            <span className="text-gray-500 text-sm font-medium ml-4">Добавить аккаунт</span>
+            <span className="text-gray-500 text-sm font-medium ml-4">{t.addAccount}</span>
           </div>
 
-          {/* Пустая лента — заглушка */}
+          {/* Лента — заглушка постов */}
           <div className="flex flex-col gap-4">
             {[1, 2, 3].map((i) => (
               <div key={i} className="rounded-2xl border border-gray-100 bg-gray-50 p-4 flex flex-col gap-2">
@@ -324,13 +434,13 @@ export default function Index() {
           </div>
         </div>
 
-        {/* BOTTOM NAV */}
+        {/* BOTTOM NAV — чёрный фон */}
         <div
-          className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-40"
-          style={{ paddingBottom: "env(safe-area-inset-bottom, 8px)" }}
+          className="fixed bottom-0 left-0 right-0 z-40"
+          style={{ background: "#111", paddingBottom: "env(safe-area-inset-bottom, 8px)", borderTop: "1px solid #222" }}
         >
-          <div className="flex items-end justify-between px-2 pt-1 pb-2 relative">
-            {navItems.map(({ tab, label, labelEn }) => (
+          <div className="flex items-end justify-between px-2 pt-1 pb-2">
+            {navTabs.map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -340,23 +450,23 @@ export default function Index() {
                 <span
                   className="text-[9px] font-semibold leading-tight"
                   style={{
-                    color: activeTab === tab ? "#0FB653" : "#aaa",
+                    color: activeTab === tab ? "#0FB653" : "#555",
                     fontFamily: "'Montserrat', sans-serif",
                   }}
                 >
-                  {lang === "ru" ? label : labelEn}
+                  {t[tab]}
                 </span>
               </button>
             ))}
           </div>
         </div>
 
-        {/* FAB — большая зелёная кнопка + */}
+        {/* FAB */}
         <button
           className="fixed bottom-20 right-4 z-50 w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-all hover:scale-110 active:scale-95"
           style={{ background: "linear-gradient(135deg, #40EFFC, #0FB653)" }}
         >
-          <span className="text-white text-3xl font-bold leading-none" style={{ lineHeight: 1 }}>+</span>
+          <span className="text-white text-3xl font-bold" style={{ lineHeight: 1 }}>+</span>
         </button>
       </div>
     );
