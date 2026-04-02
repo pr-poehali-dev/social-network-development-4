@@ -364,45 +364,38 @@ export default function Index() {
             kisLanka
           </h1>
 
-          {/* Пустое место для симметрии */}
-          <div style={{ width: 32 * 4 + 6 * 3 }} />
-        </div>
-
-        {/* CONTENT AREA */}
-        <div className="flex-1 overflow-y-auto px-4 pt-4 pb-28">
-          {/* Добавить аккаунт */}
-          <div className="flex items-center gap-3 mb-6">
-            <div className="relative flex-shrink-0" style={{ width: 56, height: 56 }}>
-              {/* Пунктирный серый овал */}
+          {/* Добавить аккаунт — правый бок хедера */}
+          <div className="flex items-center gap-2">
+            <div className="relative flex-shrink-0" style={{ width: 40, height: 40 }}>
               <div
                 style={{
                   position: "absolute",
-                  inset: -6,
+                  inset: -5,
                   borderRadius: "50%",
-                  border: "2px dashed #ccc",
+                  border: "2px dashed #444",
                   pointerEvents: "none",
                 }}
               />
               <button
                 className="transition-all hover:scale-105"
                 style={{
-                  width: 56,
-                  height: 56,
+                  width: 40,
+                  height: 40,
                   borderRadius: "50%",
                   border: `2.5px solid ${circleColor}`,
-                  background: "white",
+                  background: "#222",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  transition: "border-color 0.6s ease",
                   position: "relative",
                   zIndex: 1,
+                  transition: "border-color 0.6s ease",
                 }}
               >
                 <span
                   style={{
                     color: circleColor,
-                    fontSize: 24,
+                    fontSize: 20,
                     fontWeight: 700,
                     lineHeight: 1,
                     transition: "color 0.6s ease",
@@ -412,8 +405,14 @@ export default function Index() {
                 </span>
               </button>
             </div>
-            <span className="text-gray-500 text-sm font-medium ml-4">{t.addAccount}</span>
+            <span style={{ color: "#aaa", fontSize: 11, fontFamily: "Montserrat", whiteSpace: "nowrap" }}>
+              {t.addAccount}
+            </span>
           </div>
+        </div>
+
+        {/* CONTENT AREA */}
+        <div className="flex-1 overflow-y-auto px-4 pt-4 pb-28">
 
           {/* Лента — заглушка постов */}
           <div className="flex flex-col gap-4">
