@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 type Screen = "loading" | "home" | "register" | "login" | "feed";
+type NavTab = "settings" | "ai" | "messenger" | "feed" | "music" | "premium";
 type Lang = "ru" | "en";
 
 const translations = {
@@ -53,6 +54,9 @@ export default function Index() {
   const [lang, setLang] = useState<Lang>("ru");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [activeTab, setActiveTab] = useState<NavTab>("feed");
+  const [circleColor, setCircleColor] = useState("#0FB653");
+  const circleRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const t = translations[lang];
   const canSubmit = email.trim() !== "" && password.trim() !== "";
@@ -75,6 +79,13 @@ export default function Index() {
     }, interval);
     return () => clearInterval(timer);
   }, [screen]);
+
+  useEffect(() => {
+    circleRef.current = setInterval(() => {
+      setCircleColor((c) => (c === "#0FB653" ? "#40EFFC" : "#0FB653"));
+    }, 1200);
+    return () => { if (circleRef.current) clearInterval(circleRef.current); };
+  }, []);
 
   const handleAuth = () => {
     if (canSubmit) setScreen("feed");
@@ -137,19 +148,216 @@ export default function Index() {
     );
   }
 
+  // NAV ICONS (SVG custom)
+  const NavIcon = ({ tab }: { tab: NavTab }) => {
+    const active = activeTab === tab;
+    const color = active ? "#0FB653" : "#aaa";
+    const icons: Record<NavTab, JSX.Element> = {
+      settings: (
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          {/* Шестерёнка */}
+          <circle cx="14" cy="14" r="4" stroke={color} strokeWidth="2" fill="none"/>
+          <path d="M14 4v3M14 21v3M4 14h3M21 14h3M6.34 6.34l2.12 2.12M19.54 19.54l2.12 2.12M6.34 21.66l2.12-2.12M19.54 8.46l2.12-2.12" stroke={color} strokeWidth="2" strokeLinecap="round"/>
+          {/* Кисточки — две диагональные линии с кружком на конце */}
+          <circle cx="5" cy="23" r="1.5" fill={color}/>
+          <line x1="7" y1="21" x2="10" y2="18" stroke={color} strokeWidth="1.5" strokeLinecap="round"/>
+          <circle cx="23" cy="23" r="1.5" fill={color}/>
+          <line x1="21" y1="21" x2="18" y2="18" stroke={color} strokeWidth="1.5" strokeLinecap="round"/>
+        </svg>
+      ),
+      ai: (
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          {/* Мордашка кота */}
+          <ellipse cx="14" cy="15" rx="7" ry="6" stroke={color} strokeWidth="2" fill="none"/>
+          {/* Ушки */}
+          <polygon points="8,10 6,5 11,9" fill={color} opacity="0.7"/>
+          <polygon points="20,10 22,5 17,9" fill={color} opacity="0.7"/>
+          {/* Глазки */}
+          <ellipse cx="11.5" cy="14" rx="1" ry="1.3" fill={color}/>
+          <ellipse cx="16.5" cy="14" rx="1" ry="1.3" fill={color}/>
+          {/* Носик */}
+          <path d="M13.2 16.5 L14 17.3 L14.8 16.5" stroke={color} strokeWidth="1" fill="none"/>
+          {/* Два пышных хвоста сзади */}
+          <path d="M7 18 Q2 15 3 10 Q4 7 6 9" stroke={color} strokeWidth="2" fill="none" strokeLinecap="round"/>
+          <path d="M21 18 Q26 15 25 10 Q24 7 22 9" stroke={color} strokeWidth="2" fill="none" strokeLinecap="round"/>
+          <circle cx="3" cy="10" r="2" fill={color} opacity="0.5"/>
+          <circle cx="25" cy="10" r="2" fill={color} opacity="0.5"/>
+        </svg>
+      ),
+      messenger: (
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          {/* Ромбики-смс */}
+          <rect x="7" y="7" width="8" height="8" rx="1" transform="rotate(45 11 11)" stroke={color} strokeWidth="1.8" fill="none"/>
+          <rect x="13" y="13" width="7" height="7" rx="1" transform="rotate(45 16.5 16.5)" stroke={color} strokeWidth="1.8" fill="none"/>
+          <circle cx="11" cy="11" r="1.2" fill={color}/>
+          <circle cx="17" cy="17" r="1" fill={color}/>
+        </svg>
+      ),
+      feed: (
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          {/* Магические линии */}
+          <path d="M4 14 Q8 8 14 14 Q20 20 24 14" stroke={color} strokeWidth="2.2" fill="none" strokeLinecap="round"/>
+          <path d="M4 10 Q9 5 14 10 Q19 15 24 10" stroke={color} strokeWidth="1.5" fill="none" strokeLinecap="round" opacity="0.6"/>
+          <path d="M4 18 Q9 13 14 18 Q19 23 24 18" stroke={color} strokeWidth="1.5" fill="none" strokeLinecap="round" opacity="0.6"/>
+          <circle cx="14" cy="14" r="2.5" fill={color} opacity="0.8"/>
+          <circle cx="7" cy="11" r="1.2" fill={color} opacity="0.5"/>
+          <circle cx="21" cy="17" r="1.2" fill={color} opacity="0.5"/>
+        </svg>
+      ),
+      music: (
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          {/* Электро-гитара в форме кошачьей мордочки */}
+          <ellipse cx="14" cy="17" rx="6" ry="5" stroke={color} strokeWidth="2" fill="none"/>
+          {/* Ушки гитары = кошачьи */}
+          <polygon points="9,13 7,8 12,12" fill={color} opacity="0.6"/>
+          <polygon points="19,13 21,8 16,12" fill={color} opacity="0.6"/>
+          {/* Гриф */}
+          <line x1="14" y1="12" x2="14" y2="3" stroke={color} strokeWidth="2" strokeLinecap="round"/>
+          <line x1="12" y1="5" x2="16" y2="5" stroke={color} strokeWidth="1.5" strokeLinecap="round"/>
+          <line x1="11.5" y1="7.5" x2="16.5" y2="7.5" stroke={color} strokeWidth="1.2" strokeLinecap="round"/>
+          {/* Резонаторное отверстие */}
+          <circle cx="14" cy="17" r="1.5" fill={color} opacity="0.7"/>
+          {/* Струны */}
+          <line x1="11" y1="15" x2="11" y2="19" stroke={color} strokeWidth="1" opacity="0.5"/>
+          <line x1="14" y1="14" x2="14" y2="20" stroke={color} strokeWidth="1" opacity="0.5"/>
+          <line x1="17" y1="15" x2="17" y2="19" stroke={color} strokeWidth="1" opacity="0.5"/>
+        </svg>
+      ),
+      premium: (
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          {/* Корона */}
+          <path d="M8 12 L6 7 L10 10 L14 5 L18 10 L22 7 L20 12 Z" stroke={color} strokeWidth="1.8" fill="none" strokeLinejoin="round"/>
+          <rect x="8" y="12" width="12" height="3" rx="1" stroke={color} strokeWidth="1.5" fill="none"/>
+          {/* Хитрый кошачий глаз — вертикальный зрачок */}
+          <ellipse cx="14" cy="20" rx="5" ry="4" stroke={color} strokeWidth="1.8" fill="none"/>
+          <ellipse cx="14" cy="20" rx="1.2" ry="2.8" fill={color} opacity="0.8"/>
+          <circle cx="12.5" cy="18.5" r="0.6" fill="white" opacity="0.8"/>
+        </svg>
+      ),
+    };
+    return icons[tab];
+  };
+
+  const navItems: { tab: NavTab; label: string; labelEn: string }[] = [
+    { tab: "settings", label: "Настройки", labelEn: "Settings" },
+    { tab: "ai", label: "Нейросеть", labelEn: "AI" },
+    { tab: "messenger", label: "Мессенджер", labelEn: "Chats" },
+    { tab: "feed", label: "Лента", labelEn: "Feed" },
+    { tab: "music", label: "Музыка", labelEn: "Music" },
+    { tab: "premium", label: "Премиум", labelEn: "Premium" },
+  ];
+
   // FEED
   if (screen === "feed") {
     return (
-      <div style={BG_STYLE} className="flex flex-col items-center justify-center">
-        <LangButtons />
-        <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-10 shadow-2xl flex flex-col items-center gap-4 max-w-sm w-full mx-4">
-          <h1 className="text-4xl font-black" style={{ color: "#0FB653", fontFamily: "'Montserrat', sans-serif" }}>
+      <div className="flex flex-col bg-white" style={{ minHeight: "100vh" }}>
+        {/* HEADER */}
+        <div className="flex items-center justify-center pt-5 pb-3 px-4 border-b border-gray-100">
+          <h1
+            className="text-3xl font-black tracking-tight"
+            style={{
+              fontFamily: "'Montserrat', sans-serif",
+              color: "#0FB653",
+              WebkitTextStroke: "1px #40EFFC",
+              textShadow: "0 0 0 #40EFFC",
+              letterSpacing: "-0.5px",
+            }}
+          >
             kisLanka
           </h1>
-          <p className="text-xl font-semibold text-gray-800">{t.feedWelcome}</p>
-          <span className="text-4xl">🐱</span>
-          <p className="text-gray-400 text-sm">{t.feedTitle}</p>
         </div>
+
+        {/* CONTENT AREA */}
+        <div className="flex-1 overflow-y-auto px-4 pt-4 pb-28">
+          {/* Добавить аккаунт */}
+          <div className="flex items-center gap-3 mb-6">
+            {/* Пустой круг с анимированным контуром */}
+            <div className="relative flex-shrink-0">
+              {/* Пунктирный серый овал */}
+              <div
+                className="absolute inset-0 rounded-full"
+                style={{
+                  border: "2.5px dashed #ccc",
+                  transform: "scale(1.18)",
+                  borderRadius: "50%",
+                }}
+              />
+              <button
+                className="w-14 h-14 rounded-full flex items-center justify-center relative z-10 transition-all hover:scale-105"
+                style={{
+                  border: `2.5px solid ${circleColor}`,
+                  background: "white",
+                  transition: "border-color 0.6s ease",
+                }}
+              >
+                <span
+                  className="text-2xl font-bold leading-none"
+                  style={{
+                    color: circleColor,
+                    transition: "color 0.6s ease",
+                    lineHeight: 1,
+                  }}
+                >
+                  +
+                </span>
+              </button>
+            </div>
+            <span className="text-gray-500 text-sm font-medium ml-4">Добавить аккаунт</span>
+          </div>
+
+          {/* Пустая лента — заглушка */}
+          <div className="flex flex-col gap-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="rounded-2xl border border-gray-100 bg-gray-50 p-4 flex flex-col gap-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gray-200 animate-pulse" />
+                  <div className="flex flex-col gap-1">
+                    <div className="w-24 h-3 rounded bg-gray-200 animate-pulse" />
+                    <div className="w-16 h-2 rounded bg-gray-100 animate-pulse" />
+                  </div>
+                </div>
+                <div className="w-full h-32 rounded-xl bg-gray-200 animate-pulse" />
+                <div className="w-3/4 h-3 rounded bg-gray-200 animate-pulse" />
+                <div className="w-1/2 h-3 rounded bg-gray-100 animate-pulse" />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* BOTTOM NAV */}
+        <div
+          className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-40"
+          style={{ paddingBottom: "env(safe-area-inset-bottom, 8px)" }}
+        >
+          <div className="flex items-end justify-between px-2 pt-1 pb-2 relative">
+            {navItems.map(({ tab, label, labelEn }) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className="flex flex-col items-center gap-0.5 flex-1 py-1 transition-all hover:scale-110 active:scale-95"
+              >
+                <NavIcon tab={tab} />
+                <span
+                  className="text-[9px] font-semibold leading-tight"
+                  style={{
+                    color: activeTab === tab ? "#0FB653" : "#aaa",
+                    fontFamily: "'Montserrat', sans-serif",
+                  }}
+                >
+                  {lang === "ru" ? label : labelEn}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* FAB — большая зелёная кнопка + */}
+        <button
+          className="fixed bottom-20 right-4 z-50 w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-all hover:scale-110 active:scale-95"
+          style={{ background: "linear-gradient(135deg, #40EFFC, #0FB653)" }}
+        >
+          <span className="text-white text-3xl font-bold leading-none" style={{ lineHeight: 1 }}>+</span>
+        </button>
       </div>
     );
   }
