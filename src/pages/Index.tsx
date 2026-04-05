@@ -292,7 +292,7 @@ export default function Index() {
     { code: "ru", src: "https://cdn.poehali.dev/files/c364c501-1114-4dbe-9ad2-c95cd91bcfc6.png", title: "Русский" },
     { code: "en", src: "https://cdn.poehali.dev/files/17a39291-a18e-4541-9e69-3a61bedee99d.jpg", title: "English" },
     { code: "de", src: "https://cdn.poehali.dev/projects/10a289aa-fbf2-4834-87d3-de0e27d8e93b/bucket/e143cdb3-8428-4713-aa87-06de0414b4e5.png", title: "Deutsch" },
-    { code: "zh", src: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Flag_of_the_People%27s_Republic_of_China.svg/255px-Flag_of_the_People%27s_Republic_of_China.svg.png", title: "中文" },
+    { code: "zh", src: "https://cdn.poehali.dev/projects/10a289aa-fbf2-4834-87d3-de0e27d8e93b/bucket/3eddd500-2b4b-49c1-afc7-11a723d27186.png", title: "中文" },
   ];
 
   // FEED
@@ -489,10 +489,13 @@ export default function Index() {
           <p className="text-white text-2xl font-semibold drop-shadow">{t.welcome}</p>
 
           <div
-            className="w-28 h-28 rounded-full border-4 border-white/60 shadow-2xl flex items-center justify-center"
-            style={{ background: "rgba(255,255,255,0.25)", backdropFilter: "blur(12px)" }}
+            className="w-28 h-28 rounded-full border-4 border-white/60 shadow-2xl overflow-hidden"
           >
-            <span className="text-5xl">🐱</span>
+            <img
+              src="https://cdn.poehali.dev/projects/10a289aa-fbf2-4834-87d3-de0e27d8e93b/bucket/2313214d-9432-4f61-8dd6-723222165b00.jpg"
+              alt="avatar"
+              style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+            />
           </div>
 
           <p className="text-white text-xl font-medium drop-shadow">{t.meow}</p>
